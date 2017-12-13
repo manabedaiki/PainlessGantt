@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PainlessGanttCli": {
+      "commandName": "Project",
+      "commandLineArgs": "--project ../assets/project.yml --template ../assets/template.xlsx --output ../assets/ganttchart.xlsx"
+    }
+  }
+}
