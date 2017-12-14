@@ -91,7 +91,7 @@ namespace PainlessGantt
             }
             if (ticket.EstimatedPeriod.End == default)
             {
-                ticket.EstimatedPeriod.End = range.Start;
+                ticket.EstimatedPeriod.End = range.End;
             }
             foreach (var child in ticket.Children)
             {
