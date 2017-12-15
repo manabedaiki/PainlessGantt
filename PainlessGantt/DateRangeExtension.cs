@@ -27,21 +27,6 @@ namespace PainlessGantt
         }
 
         /// <summary>
-        /// 指定した日が範囲内かどうかを判断します。
-        /// </summary>
-        /// <param name="range">日付の範囲。</param>
-        /// <param name="date">範囲内かどうかを判断する対象の日。</param>
-        /// <returns><paramref name="date"/> が <paramref name="range"/> の範囲内の場合は <c>true</c>。それ以外の場合は <c>false</c>。</returns>
-        public static bool In([NotNull] this IDateRange range, DateTime date)
-        {
-            if (range == null)
-                throw new ArgumentNullException(nameof(range));
-            if (range.Start == default || range.End == default)
-                return false;
-            return range.Start <= date && date <= range.End;
-        }
-
-        /// <summary>
         /// 指定した <see cref="IDateRange"/> のシーケンスに含まれている日付の最小値を取得します。
         /// </summary>
         /// <param name="source"><see cref="IDateRange"/> のシーケンス。</param>

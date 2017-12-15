@@ -85,6 +85,15 @@ namespace PainlessGantt
             var row1 = worksheet.GetRow(1);
             var row2 = worksheet.GetRow(2);
             var row3 = worksheet.GetRow(3);
+            var row1WeekdayStyle = row1.GetCell(6).CellStyle;
+            var row1HolidayStyle = row1.GetCell(7).CellStyle;
+            var row1PublicHolidayStyle = row1.GetCell(8).CellStyle;
+            var row2WeekdayStyle = row2.GetCell(6).CellStyle;
+            var row2HolidayStyle = row2.GetCell(7).CellStyle;
+            var row2PublicHolidayStyle = row3.GetCell(8).CellStyle;
+            var row3WeekdayStyle = row3.GetCell(6).CellStyle;
+            var row3HolidayStyle = row3.GetCell(7).CellStyle;
+            var row3PublicHolidayStyle = row3.GetCell(8).CellStyle;
             var cell0T = row0.GetCell(6);
             var cell1T = row1.GetCell(6);
             var cell2T = row2.GetCell(6);
@@ -114,14 +123,23 @@ namespace PainlessGantt
                 if (source.Configuration.Holidays.Contains(date))
                 {
                     cell1.SetCellValue("祝");
+                    cell1.CellStyle = row1PublicHolidayStyle;
+                    cell2.CellStyle = row2PublicHolidayStyle;
+                    cell3.CellStyle = row3PublicHolidayStyle;
                 }
                 else if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                 {
                     cell1.SetCellValue("休");
+                    cell1.CellStyle = row1HolidayStyle;
+                    cell2.CellStyle = row2HolidayStyle;
+                    cell3.CellStyle = row3HolidayStyle;
                 }
                 else
                 {
                     cell1.SetCellValue((string)null);
+                    cell1.CellStyle = row1WeekdayStyle;
+                    cell2.CellStyle = row2WeekdayStyle;
+                    cell3.CellStyle = row3WeekdayStyle;
                 }
                 cell2.SetCellValue(date);
                 cell3.SetCellValue(date);
@@ -138,11 +156,14 @@ namespace PainlessGantt
 
         private static void BuildProjects([NotNull] IGanttSource source, [NotNull] ISheet worksheet, [NotNull] IDateRange dateRange)
         {
+            var drawing = (XSSFDrawing)worksheet.CreateDrawingPatriarch();
             var row4 = worksheet.GetRow(4);
-            var noneStyle = row4.GetCell(6).CellStyle;
-            var estimatedStyle = row4.GetCell(7).CellStyle;
-            var overlappedStyle = row4.GetCell(8).CellStyle;
-            var actualStyle = row4.GetCell(9).CellStyle;
+            var weekdayStyle = row4.GetCell(6).CellStyle;
+            var holidayStyle = row4.GetCell(7).CellStyle;
+            var publicHolidayStyle = row4.GetCell(8).CellStyle;
+            weekdayStyle.BorderTop = BorderStyle.None;
+            holidayStyle.BorderTop = BorderStyle.None;
+            publicHolidayStyle.BorderTop = BorderStyle.None;
             var ticketsWithNestAndRowIndex = source
                 .Projects
                 .Select(x => new TicketBuilder { Name = x.Name, Children = (List<TicketBuilder>)x.Tickets })
@@ -204,22 +225,54 @@ namespace PainlessGantt
                     {
                         cell = cell.CopyCellTo(6 + n);
                     }
-                    if (ticket.EstimatedPeriod.In(date) && ticket.ActualPeriod.In(date))
+                    if (source.Configuration.Holidays.Contains(date))
                     {
-                        cell.CellStyle = overlappedStyle;
+                        cell.CellStyle = publicHolidayStyle;
                     }
-                    else if (ticket.EstimatedPeriod.In(date))
+                    else if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                     {
-                        cell.CellStyle = estimatedStyle;
-                    }
-                    else if (ticket.ActualPeriod.In(date))
-                    {
-                        cell.CellStyle = actualStyle;
+                        cell.CellStyle = holidayStyle;
                     }
                     else
                     {
-                        cell.CellStyle = noneStyle;
+                        cell.CellStyle = weekdayStyle;
                     }
+                }
+                if (ticket.EstimatedPeriod.Start != default && ticket.EstimatedPeriod.End != default)
+                {
+                    var anchor = new XSSFClientAnchor(
+                        dx1: XSSFShape.EMU_PER_POINT * 2,
+                        dy1: XSSFShape.EMU_PER_POINT * 7,
+                        dx2: XSSFShape.EMU_PER_POINT * -2,
+                        dy2: XSSFShape.EMU_PER_POINT * 7,
+                        col1: 6 + (ticket.EstimatedPeriod.Start - dateRange.Start).Days,
+                        row1: rowIndex,
+                        col2: 6 + (ticket.EstimatedPeriod.End - dateRange.Start).Days + 1,
+                        row2: rowIndex);
+                    var connector = drawing.CreateConnector(anchor);
+                    connector.LineWidth = 6;
+                    connector.SetLineStyleColor(
+                        source.Configuration.EstimatedLineColor.R,
+                        source.Configuration.EstimatedLineColor.G,
+                        source.Configuration.EstimatedLineColor.B);
+                }
+                if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End != default)
+                {
+                    var anchor = new XSSFClientAnchor(
+                        dx1: XSSFShape.EMU_PER_POINT * 2,
+                        dy1: XSSFShape.EMU_PER_POINT * 13,
+                        dx2: XSSFShape.EMU_PER_POINT * -2,
+                        dy2: XSSFShape.EMU_PER_POINT * 13,
+                        col1: 6 + (ticket.ActualPeriod.Start - dateRange.Start).Days,
+                        row1: rowIndex,
+                        col2: 6 + (ticket.ActualPeriod.End - dateRange.Start).Days + 1,
+                        row2: rowIndex);
+                    var connector = drawing.CreateConnector(anchor);
+                    connector.LineWidth = 6;
+                    connector.SetLineStyleColor(
+                        source.Configuration.ActualLineColor.R,
+                        source.Configuration.ActualLineColor.G,
+                        source.Configuration.ActualLineColor.B);
                 }
             }
         }
