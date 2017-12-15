@@ -90,7 +90,7 @@ namespace PainlessGantt
             var row1PublicHolidayStyle = row1.GetCell(8).CellStyle;
             var row2WeekdayStyle = row2.GetCell(6).CellStyle;
             var row2HolidayStyle = row2.GetCell(7).CellStyle;
-            var row2PublicHolidayStyle = row3.GetCell(8).CellStyle;
+            var row2PublicHolidayStyle = row2.GetCell(8).CellStyle;
             var row3WeekdayStyle = row3.GetCell(6).CellStyle;
             var row3HolidayStyle = row3.GetCell(7).CellStyle;
             var row3PublicHolidayStyle = row3.GetCell(8).CellStyle;
