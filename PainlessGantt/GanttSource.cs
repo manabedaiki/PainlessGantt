@@ -7,6 +7,7 @@ using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using PainlessGantt.Construction;
+using PainlessGantt.Internal;
 using YamlDotNet.Serialization;
 
 namespace PainlessGantt
@@ -177,38 +178,10 @@ namespace PainlessGantt
                     row = row.CopyRowTo(rowIndex);
                 }
                 row.GetCell(0).SetCellValue($"{new string('　', indent * 2)}{ticket.Name}");
-                if (ticket.EstimatedPeriod.Start != default)
-                {
-                    row.GetCell(1).SetCellValue(ticket.EstimatedPeriod.Start);
-                }
-                else
-                {
-                    row.GetCell(1).SetCellValue((string)null);
-                }
-                if (ticket.EstimatedPeriod.End != default)
-                {
-                    row.GetCell(2).SetCellValue(ticket.EstimatedPeriod.End);
-                }
-                else
-                {
-                    row.GetCell(2).SetCellValue((string)null);
-                }
-                if (ticket.ActualPeriod.Start != default)
-                {
-                    row.GetCell(3).SetCellValue(ticket.ActualPeriod.Start);
-                }
-                else
-                {
-                    row.GetCell(3).SetCellValue((string)null);
-                }
-                if (ticket.ActualPeriod.End != default)
-                {
-                    row.GetCell(4).SetCellValue(ticket.ActualPeriod.End);
-                }
-                else
-                {
-                    row.GetCell(4).SetCellValue((string)null);
-                }
+                row.GetCell(1).SetCellValueOrDefault(ticket.EstimatedPeriod.Start);
+                row.GetCell(2).SetCellValueOrDefault(ticket.EstimatedPeriod.End);
+                row.GetCell(3).SetCellValueOrDefault(ticket.ActualPeriod.Start);
+                row.GetCell(4).SetCellValueOrDefault(ticket.ActualPeriod.End);
                 var status = ticket.InferredStatus();
                 if (status == TicketStatus.Unknown)
                 {
