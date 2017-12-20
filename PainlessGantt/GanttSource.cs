@@ -247,6 +247,24 @@ namespace PainlessGantt
                         source.Configuration.ActualLineColor.G,
                         source.Configuration.ActualLineColor.B);
                 }
+                else if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End == default && ticket.ActualPeriod.Start <= DateTime.Today)
+                {
+                    var anchor = new XSSFClientAnchor(
+                        dx1: XSSFShape.EMU_PER_POINT * 2,
+                        dy1: XSSFShape.EMU_PER_POINT * 13,
+                        dx2: XSSFShape.EMU_PER_POINT * -2,
+                        dy2: XSSFShape.EMU_PER_POINT * 13,
+                        col1: 6 + (ticket.ActualPeriod.Start - dateRange.Start).Days,
+                        row1: rowIndex,
+                        col2: 6 + (DateTime.Today - dateRange.Start).Days + 1,
+                        row2: rowIndex);
+                    var connector = drawing.CreateConnector(anchor);
+                    connector.LineWidth = 6;
+                    connector.SetLineStyleColor(
+                        source.Configuration.ActualLineColor.R,
+                        source.Configuration.ActualLineColor.G,
+                        source.Configuration.ActualLineColor.B);
+                }
             }
         }
     }
