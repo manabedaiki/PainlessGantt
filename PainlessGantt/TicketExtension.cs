@@ -51,16 +51,22 @@ namespace PainlessGantt
                 return ticket.Status;
             }
             if (ticket.EstimatedPeriod.Start == default || ticket.EstimatedPeriod.End == default)
-                return ticket.Status;
+            {
+                return TicketStatus.Unknown;
+            }
             if (DateTime.Today < ticket.EstimatedPeriod.Start)
             {
-                return ticket.Status;
+                return TicketStatus.Unknown;
             }
-            if (ticket.ActualPeriod.Start != default)
+            if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End != default)
             {
-                return ticket.ActualPeriod.End != default ? TicketStatus.Completed : TicketStatus.Doing;
+                return TicketStatus.Completed;
             }
-            return ticket.Status == TicketStatus.Unknown ? TicketStatus.Delayed : ticket.Status;
+            if (ticket.ActualPeriod.Start != default && DateTime.Today < ticket.EstimatedPeriod.End)
+            {
+                return TicketStatus.Doing;
+            }
+            return TicketStatus.Delayed;
         }
     }
 }
