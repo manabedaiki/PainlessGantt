@@ -11,14 +11,29 @@ namespace PainlessGantt
     public static class InputCompletion
     {
         /// <summary>
-        /// ボトム アップ戦略で、<see cref="IGanttSource"/> のサブプロパティに可能な限り値を設定します。
+        /// <see cref="IGanttSource"/> のサブプロパティに可能な限り値を設定します。
         /// </summary>
-        /// <param name="source">値を設定する対象の <see cref="GanttSourceBuilder"/>。</param>
+        /// <param name="source">値を設定する対象の <see cref="IGanttSource"/>。</param>
+        /// <returns></returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> が <c>null</c> です。</exception>
-        public static void CompleteBubble([NotNull] GanttSourceBuilder source)
+        /// <exception cref="NotImplementedException">
+        /// 現在、特定の <see cref="IGanttSource"/> 実装クラスのみをサポートしています。
+        /// <see cref="GanttSource.Load"/> を使用して作成したオブジェクトを指定してください。
+        /// </exception>
+        [NotNull]
+        public static IGanttSource Complete([NotNull] IGanttSource source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
+            if (!(source is GanttSourceBuilder sourceBuilder))
+                throw new NotImplementedException();
+            CompleteBubble(sourceBuilder);
+            CompleteTunnel(sourceBuilder);
+            return sourceBuilder;
+        }
+
+        private static void CompleteBubble([NotNull] GanttSourceBuilder source)
+        {
             foreach (var project in source.Projects)
             {
                 foreach (var ticket in project.Tickets)
@@ -56,15 +71,8 @@ namespace PainlessGantt
             }
         }
 
-        /// <summary>
-        /// トップ ダウン戦略で、<see cref="IGanttSource"/> のサブプロパティに可能な限り値を設定します。
-        /// </summary>
-        /// <param name="source">値を設定する対象の <see cref="GanttSourceBuilder"/>。</param>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/> が <c>null</c> です。</exception>
-        public static void CompleteTunnel([NotNull] GanttSourceBuilder source)
+        private static void CompleteTunnel([NotNull] GanttSourceBuilder source)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
             foreach (var project in source.Projects)
             {
                 var range = new DateRangeBuilder
