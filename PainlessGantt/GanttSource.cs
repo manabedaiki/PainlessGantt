@@ -223,10 +223,7 @@ namespace PainlessGantt
                         row2: rowIndex);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
-                    connector.SetLineStyleColor(
-                        source.Configuration.EstimatedLineColor.R,
-                        source.Configuration.EstimatedLineColor.G,
-                        source.Configuration.EstimatedLineColor.B);
+                    connector.SetLineStyleColor(source.Configuration.EstimatedLineColor);
                 }
                 if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End != default)
                 {
@@ -241,10 +238,7 @@ namespace PainlessGantt
                         row2: rowIndex);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
-                    connector.SetLineStyleColor(
-                        source.Configuration.ActualLineColor.R,
-                        source.Configuration.ActualLineColor.G,
-                        source.Configuration.ActualLineColor.B);
+                    connector.SetLineStyleColor(source.Configuration.ActualLineColor);
                 }
                 else if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End == default && ticket.ActualPeriod.Start <= DateTime.Today)
                 {
@@ -259,10 +253,7 @@ namespace PainlessGantt
                         row2: rowIndex);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
-                    connector.SetLineStyleColor(
-                        source.Configuration.ActualLineColor.R,
-                        source.Configuration.ActualLineColor.G,
-                        source.Configuration.ActualLineColor.B);
+                    connector.SetLineStyleColor(source.Configuration.ActualLineColor);
                 }
             }
         }
