@@ -29,6 +29,7 @@ namespace PainlessGantt
                 throw new NotImplementedException();
             CompletePeriodBubble(sourceBuilder);
             CompletePeriodTunnel(sourceBuilder);
+            CompleteStatus(sourceBuilder);
             return sourceBuilder;
         }
 
@@ -103,6 +104,45 @@ namespace PainlessGantt
                 foreach (var ticket in project.Tickets)
                 {
                     Loop(ticket, range);
+                }
+            }
+        }
+
+        private static void CompleteStatus([NotNull] GanttSourceBuilder source)
+        {
+            void Loop(TicketBuilder ticket)
+            {
+                foreach (var child in ticket.Children)
+                {
+                    Loop(child);
+                }
+
+                if (ticket.Status != TicketStatus.Unknown)
+                    return;
+                if (ticket.EstimatedPeriod.Start == default || ticket.EstimatedPeriod.End == default)
+                    return;
+                if (DateTime.Today < ticket.EstimatedPeriod.Start)
+                    return;
+
+                if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End != default)
+                {
+                    ticket.Status = TicketStatus.Completed;
+                }
+                else if (ticket.ActualPeriod.Start != default && DateTime.Today < ticket.EstimatedPeriod.End)
+                {
+                    ticket.Status = TicketStatus.Doing;
+                }
+                else
+                {
+                    ticket.Status = TicketStatus.Delayed;
+                }
+            }
+
+            foreach (var project in source.Projects)
+            {
+                foreach (var ticket in project.Tickets)
+                {
+                    Loop(ticket);
                 }
             }
         }
