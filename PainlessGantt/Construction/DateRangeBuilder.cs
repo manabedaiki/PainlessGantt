@@ -11,13 +11,13 @@ namespace PainlessGantt.Construction
         /// <summary>
         /// 開始日を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "開始")]
+        [YamlMember(Alias = LocalizationProperties.DateRangeStartKey)]
         public DateTime Start { get; set; }
 
         /// <summary>
         /// 終了日を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "終了")]
+        [YamlMember(Alias = LocalizationProperties.DateRangeEndKey)]
         public DateTime End { get; set; }
     }
 }

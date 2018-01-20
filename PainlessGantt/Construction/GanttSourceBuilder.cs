@@ -13,7 +13,7 @@ namespace PainlessGantt.Construction
         /// このガント チャートの設定を取得または設定します。
         /// </summary>
         [NotNull]
-        [YamlMember(Alias = "設定")]
+        [YamlMember(Alias = LocalizationProperties.GanttSourceConfigurationKey)]
         public ConfigurationBuilder Configuration { get; set; } = new ConfigurationBuilder();
 
         /// <inheritdoc />
@@ -24,7 +24,7 @@ namespace PainlessGantt.Construction
         /// </summary>
         [ItemNotNull]
         [NotNull]
-        [YamlMember(Alias = "プロジェクト一覧")]
+        [YamlMember(Alias = LocalizationProperties.GanttSourceProjectsKey)]
         public List<ProjectBuilder> Projects { get; set; } = new List<ProjectBuilder>();
 
         /// <inheritdoc />

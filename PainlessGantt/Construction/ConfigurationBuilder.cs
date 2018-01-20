@@ -14,7 +14,7 @@ namespace PainlessGantt.Construction
         /// 祝日の一覧を取得または設定します。
         /// </summary>
         [NotNull]
-        [YamlMember(Alias = "祝日")]
+        [YamlMember(Alias = LocalizationProperties.ConfigurationHolidaysKey)]
         public List<DateTime> Holidays { get; set; } = new List<DateTime>();
 
         /// <inheritdoc />
@@ -24,7 +24,7 @@ namespace PainlessGantt.Construction
         /// 見積もり期間の線の色を取得または設定します。
         /// </summary>
         [NotNull]
-        [YamlMember(Alias = "予定線の色")]
+        [YamlMember(Alias = LocalizationProperties.ConfigurationEstimatedLineColorKey)]
         public ColorBuilder EstimatedLineColor { get; set; } = new ColorBuilder { R = 0xAA, G = 0xAA, B = 0xAA };
 
         /// <inheritdoc />
@@ -34,7 +34,7 @@ namespace PainlessGantt.Construction
         /// 実際の期間の線の色を取得または設定します。
         /// </summary>
         [NotNull]
-        [YamlMember(Alias = "実績線の色")]
+        [YamlMember(Alias = LocalizationProperties.ConfigurationActualLineColorKey)]
         public ColorBuilder ActualLineColor { get; set; } = new ColorBuilder { R = 0x75, G = 0xBF, B = 0xD6 };
 
         /// <inheritdoc />

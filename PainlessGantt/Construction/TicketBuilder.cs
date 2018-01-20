@@ -12,13 +12,13 @@ namespace PainlessGantt.Construction
         /// <summary>
         /// このチケットの名前を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "作業")]
+        [YamlMember(Alias = LocalizationProperties.TicketNameKey)]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// このチケットの消化に必要な見積もり期間を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "予定")]
+        [YamlMember(Alias = LocalizationProperties.TicketEstimatedPeriodKey)]
         public DateRangeBuilder EstimatedPeriod { get; set; } = new DateRangeBuilder();
 
         /// <inheritdoc />
@@ -27,7 +27,7 @@ namespace PainlessGantt.Construction
         /// <summary>
         /// このチケットの消化にかかった実際の期間を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "実績")]
+        [YamlMember(Alias = LocalizationProperties.TicketActualPeriodKey)]
         public DateRangeBuilder ActualPeriod { get; set; } = new DateRangeBuilder();
 
         /// <inheritdoc />
@@ -36,7 +36,7 @@ namespace PainlessGantt.Construction
         /// <summary>
         /// このチケットの現状の状態を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "状態")]
+        [YamlMember(Alias = LocalizationProperties.TicketStatusKey)]
         public TicketStatus Status { get; set; } = TicketStatus.Unknown;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace PainlessGantt.Construction
         /// </summary>
         [ItemNotNull]
         [NotNull]
-        [YamlMember(Alias = "詳細")]
+        [YamlMember(Alias = LocalizationProperties.TicketChildrenKey)]
         public List<TicketBuilder> Children { get; set; } = new List<TicketBuilder>();
 
         /// <inheritdoc />

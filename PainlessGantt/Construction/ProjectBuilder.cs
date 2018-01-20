@@ -12,7 +12,7 @@ namespace PainlessGantt.Construction
         /// <summary>
         /// このプロジェクトの名前を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "プロジェクト")]
+        [YamlMember(Alias = LocalizationProperties.ProjectNameKey)]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace PainlessGantt.Construction
         /// </summary>
         [ItemNotNull]
         [NotNull]
-        [YamlMember(Alias = "作業一覧")]
+        [YamlMember(Alias = LocalizationProperties.ProjectTicketsKey)]
         public List<TicketBuilder> Tickets { get; set; } = new List<TicketBuilder>();
 
         /// <inheritdoc />

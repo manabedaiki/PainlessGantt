@@ -10,19 +10,19 @@ namespace PainlessGantt.Construction
         /// <summary>
         /// 赤成分を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "赤")]
+        [YamlMember(Alias = LocalizationProperties.ColorRKey)]
         public byte R { get; set; }
 
         /// <summary>
         /// 緑成分を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "緑")]
+        [YamlMember(Alias = LocalizationProperties.ColorGKey)]
         public byte G { get; set; }
 
         /// <summary>
         /// 青成分を取得または設定します。
         /// </summary>
-        [YamlMember(Alias = "青")]
+        [YamlMember(Alias = LocalizationProperties.ColorBKey)]
         public byte B { get; set; }
     }
 }
