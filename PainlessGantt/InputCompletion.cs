@@ -27,12 +27,12 @@ namespace PainlessGantt
                 throw new ArgumentNullException(nameof(source));
             if (!(source is GanttSourceBuilder sourceBuilder))
                 throw new NotImplementedException();
-            CompleteBubble(sourceBuilder);
-            CompleteTunnel(sourceBuilder);
+            CompletePeriodBubble(sourceBuilder);
+            CompletePeriodTunnel(sourceBuilder);
             return sourceBuilder;
         }
 
-        private static void CompleteBubble([NotNull] GanttSourceBuilder source)
+        private static void CompletePeriodBubble([NotNull] GanttSourceBuilder source)
         {
             void Loop(TicketBuilder ticket)
             {
@@ -73,7 +73,7 @@ namespace PainlessGantt
             }
         }
 
-        private static void CompleteTunnel([NotNull] GanttSourceBuilder source)
+        private static void CompletePeriodTunnel([NotNull] GanttSourceBuilder source)
         {
             void Loop(TicketBuilder ticket, IDateRange range)
             {
