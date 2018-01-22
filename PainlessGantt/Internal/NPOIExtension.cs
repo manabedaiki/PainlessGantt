@@ -1,6 +1,7 @@
 using System;
 using JetBrains.Annotations;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace PainlessGantt.Internal
 {
@@ -28,6 +29,21 @@ namespace PainlessGantt.Internal
             {
                 cell.SetCellValue(value);
             }
+        }
+
+        /// <summary>
+        /// 図形オブジェクトの線の色を設定します。
+        /// </summary>
+        /// <param name="shape">図形オブジェクト。</param>
+        /// <param name="color">新しく設定する色。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="shape"/> または <paramref name="color"/> が <c>null</c> です。</exception>
+        public static void SetLineStyleColor([NotNull] this XSSFShape shape, [NotNull] IColor color)
+        {
+            if (shape == null)
+                throw new ArgumentNullException(nameof(shape));
+            if (color == null)
+                throw new ArgumentNullException(nameof(color));
+            shape.SetLineStyleColor(color.R, color.G, color.B);
         }
     }
 }
