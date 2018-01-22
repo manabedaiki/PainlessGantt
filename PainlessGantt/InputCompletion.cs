@@ -11,60 +11,89 @@ namespace PainlessGantt
     public static class InputCompletion
     {
         /// <summary>
-        /// ボトム アップ戦略で、<see cref="IGanttSource"/> のサブプロパティに可能な限り値を設定します。
+        /// <see cref="IGanttSource"/> のサブプロパティに可能な限り値を設定します。
         /// </summary>
-        /// <param name="source">値を設定する対象の <see cref="GanttSourceBuilder"/>。</param>
+        /// <param name="source">値を設定する対象の <see cref="IGanttSource"/>。</param>
+        /// <returns></returns>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> が <c>null</c> です。</exception>
-        public static void CompleteBubble([NotNull] GanttSourceBuilder source)
+        /// <exception cref="NotImplementedException">
+        /// 現在、特定の <see cref="IGanttSource"/> 実装クラスのみをサポートしています。
+        /// <see cref="GanttSource.Load"/> を使用して作成したオブジェクトを指定してください。
+        /// </exception>
+        [NotNull]
+        public static IGanttSource Complete([NotNull] IGanttSource source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
+            if (!(source is GanttSourceBuilder sourceBuilder))
+                throw new NotImplementedException();
+            CompletePeriodBubble(sourceBuilder);
+            CompletePeriodTunnel(sourceBuilder);
+            CompleteStatus(sourceBuilder);
+            return sourceBuilder;
+        }
+
+        private static void CompletePeriodBubble([NotNull] GanttSourceBuilder source)
+        {
+            void Loop(TicketBuilder ticket)
+            {
+                if (ticket.Children.Count == 0)
+                    return;
+                foreach (var child in ticket.Children)
+                {
+                    Loop(child);
+                }
+
+                if (ticket.EstimatedPeriod.Start == default)
+                {
+                    ticket.EstimatedPeriod.Start = ticket.Children.Select(x => x.EstimatedPeriod).Minimum();
+                }
+
+                if (ticket.EstimatedPeriod.End == default)
+                {
+                    ticket.EstimatedPeriod.End = ticket.Children.Select(x => x.EstimatedPeriod).Maximum();
+                }
+
+                if (ticket.ActualPeriod.Start == default)
+                {
+                    ticket.ActualPeriod.Start = ticket.Children.Select(x => x.ActualPeriod).Minimum();
+                }
+
+                if (ticket.ActualPeriod.End == default && ticket.Children.All(x => x.ActualPeriod.End != default))
+                {
+                    ticket.ActualPeriod.End = ticket.Children.Select(x => x.ActualPeriod).Maximum();
+                }
+            }
+
             foreach (var project in source.Projects)
             {
                 foreach (var ticket in project.Tickets)
                 {
-                    CompleteBubble(ticket);
+                    Loop(ticket);
                 }
             }
         }
 
-        private static void CompleteBubble([NotNull] TicketBuilder ticket)
+        private static void CompletePeriodTunnel([NotNull] GanttSourceBuilder source)
         {
-            if (ticket == null)
-                throw new ArgumentNullException(nameof(ticket));
-            if (ticket.Children.Count == 0)
-                return;
-            foreach (var child in ticket.Children)
+            void Loop(TicketBuilder ticket, IDateRange range)
             {
-                CompleteBubble(child);
-            }
-            if (ticket.EstimatedPeriod.Start == default)
-            {
-                ticket.EstimatedPeriod.Start = ticket.Children.Select(x => x.EstimatedPeriod).Minimum();
-            }
-            if (ticket.EstimatedPeriod.End == default)
-            {
-                ticket.EstimatedPeriod.End = ticket.Children.Select(x => x.EstimatedPeriod).Maximum();
-            }
-            if (ticket.ActualPeriod.Start == default)
-            {
-                ticket.ActualPeriod.Start = ticket.Children.Select(x => x.ActualPeriod).Minimum();
-            }
-            if (ticket.ActualPeriod.End == default && ticket.Children.All(x => x.ActualPeriod.End != default))
-            {
-                ticket.ActualPeriod.End = ticket.Children.Select(x => x.ActualPeriod).Maximum();
-            }
-        }
+                if (ticket.EstimatedPeriod.Start == default)
+                {
+                    ticket.EstimatedPeriod.Start = range.Start;
+                }
 
-        /// <summary>
-        /// トップ ダウン戦略で、<see cref="IGanttSource"/> のサブプロパティに可能な限り値を設定します。
-        /// </summary>
-        /// <param name="source">値を設定する対象の <see cref="GanttSourceBuilder"/>。</param>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/> が <c>null</c> です。</exception>
-        public static void CompleteTunnel([NotNull] GanttSourceBuilder source)
-        {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                if (ticket.EstimatedPeriod.End == default)
+                {
+                    ticket.EstimatedPeriod.End = range.End;
+                }
+
+                foreach (var child in ticket.Children)
+                {
+                    Loop(child, ticket.EstimatedPeriod);
+                }
+            }
+
             foreach (var project in source.Projects)
             {
                 var range = new DateRangeBuilder
@@ -74,28 +103,47 @@ namespace PainlessGantt
                 };
                 foreach (var ticket in project.Tickets)
                 {
-                    CompleteTunnel(ticket, range);
+                    Loop(ticket, range);
                 }
             }
         }
 
-        private static void CompleteTunnel([NotNull] TicketBuilder ticket, [NotNull] IDateRange range)
+        private static void CompleteStatus([NotNull] GanttSourceBuilder source)
         {
-            if (ticket == null)
-                throw new ArgumentNullException(nameof(ticket));
-            if (range == null)
-                throw new ArgumentNullException(nameof(range));
-            if (ticket.EstimatedPeriod.Start == default)
+            void Loop(TicketBuilder ticket)
             {
-                ticket.EstimatedPeriod.Start = range.Start;
+                foreach (var child in ticket.Children)
+                {
+                    Loop(child);
+                }
+
+                if (ticket.Status != TicketStatus.Unknown)
+                    return;
+                if (ticket.EstimatedPeriod.Start == default || ticket.EstimatedPeriod.End == default)
+                    return;
+                if (DateTime.Today < ticket.EstimatedPeriod.Start)
+                    return;
+
+                if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End != default)
+                {
+                    ticket.Status = TicketStatus.Completed;
+                }
+                else if (ticket.ActualPeriod.Start != default && DateTime.Today < ticket.EstimatedPeriod.End)
+                {
+                    ticket.Status = TicketStatus.Doing;
+                }
+                else
+                {
+                    ticket.Status = TicketStatus.Delayed;
+                }
             }
-            if (ticket.EstimatedPeriod.End == default)
+
+            foreach (var project in source.Projects)
             {
-                ticket.EstimatedPeriod.End = range.End;
-            }
-            foreach (var child in ticket.Children)
-            {
-                CompleteTunnel(child, ticket.EstimatedPeriod);
+                foreach (var ticket in project.Tickets)
+                {
+                    Loop(ticket);
+                }
             }
         }
     }

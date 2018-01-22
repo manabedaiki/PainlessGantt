@@ -182,14 +182,13 @@ namespace PainlessGantt
                 row.GetCell(2).SetCellValueOrDefault(ticket.EstimatedPeriod.End);
                 row.GetCell(3).SetCellValueOrDefault(ticket.ActualPeriod.Start);
                 row.GetCell(4).SetCellValueOrDefault(ticket.ActualPeriod.End);
-                var status = ticket.InferredStatus();
-                if (status == TicketStatus.Unknown)
+                if (ticket.Status == TicketStatus.Unknown)
                 {
                     row.GetCell(5).SetCellValue((string)null);
                 }
                 else
                 {
-                    row.GetCell(5).SetCellValue(EnumDisplayNameAttribute.GetDisplayName(status));
+                    row.GetCell(5).SetCellValue(EnumDisplayNameAttribute.GetDisplayName(ticket.Status));
                 }
                 foreach (var (date, n) in dateRange.AsEnumerable().Select((x, i) => (x, i)))
                 {

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.CommandLineUtils;
 using PainlessGantt;
-using PainlessGantt.Construction;
 
 namespace PainlessGanttCli
 {
@@ -14,9 +13,8 @@ namespace PainlessGanttCli
             var output = application.Option("-o | --output", "出力先 (Excel)", CommandOptionType.SingleValue);
             application.OnExecute(() =>
             {
-                var source = (GanttSourceBuilder)GanttSource.Load(project.Value());
-                InputCompletion.CompleteBubble(source);
-                InputCompletion.CompleteTunnel(source);
+                var source = GanttSource.Load(project.Value());
+                source = InputCompletion.Complete(source);
                 source.BuildGanttChart(template.Value(), output.Value());
                 return 0;
             });
