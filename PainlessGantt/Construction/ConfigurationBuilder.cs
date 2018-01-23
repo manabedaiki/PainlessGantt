@@ -39,5 +39,15 @@ namespace PainlessGantt.Construction
 
         /// <inheritdoc />
         IColor IConfiguration.ActualLineColor => ActualLineColor;
+
+        /// <summary>
+        /// 遅延している期間の線の色を取得します。
+        /// </summary>
+        [NotNull]
+        [YamlMember(Alias = "遅延線の色")]
+        public ColorBuilder DelayLineColor { get; set; } = new ColorBuilder { R = 0xEE, G = 0x63, B = 0x63 };
+
+        /// <inheritdoc />
+        IColor IConfiguration.DelayLineColor => DelayLineColor;
     }
 }
