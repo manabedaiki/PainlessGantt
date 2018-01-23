@@ -28,5 +28,13 @@ namespace PainlessGantt
         /// <seealso cref="ITicket.ActualPeriod"/>
         [NotNull]
         IColor ActualLineColor { get; }
+
+        /// <summary>
+        /// 遅延している期間の線の色を取得します。
+        /// </summary>
+        /// <seealso cref="ITicket.EstimatedPeriod"/>
+        /// <seealso cref="ITicket.ActualPeriod"/>
+        [NotNull]
+        IColor DelayLineColor { get; }
     }
 }
