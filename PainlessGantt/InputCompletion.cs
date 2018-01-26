@@ -128,7 +128,7 @@ namespace PainlessGantt
                 {
                     ticket.Status = TicketStatus.Completed;
                 }
-                else if (ticket.ActualPeriod.Start != default && DateTime.Today < ticket.EstimatedPeriod.End)
+                else if (ticket.ActualPeriod.Start != default && DateTime.Today <= ticket.EstimatedPeriod.End)
                 {
                     ticket.Status = TicketStatus.Doing;
                 }
