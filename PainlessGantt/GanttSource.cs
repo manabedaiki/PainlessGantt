@@ -210,77 +210,48 @@ namespace PainlessGantt
                         cell.CellStyle = weekdayStyle;
                     }
                 }
+
+                XSSFClientAnchor CreateAnchor(int dx1, int dx2, int dy, DateTime start, DateTime end)
+                    => new XSSFClientAnchor(
+                        dx1: XSSFShape.EMU_PER_POINT * dx1,
+                        dy1: XSSFShape.EMU_PER_POINT * dy,
+                        dx2: XSSFShape.EMU_PER_POINT * dx2,
+                        dy2: XSSFShape.EMU_PER_POINT * dy,
+                        col1: 6 + (start - dateRange.Start).Days,
+                        row1: rowIndex,
+                        col2: 6 + (end - dateRange.Start).Days + 1,
+                        row2: rowIndex);
                 if (ticket.EstimatedPeriod.Start != default && ticket.EstimatedPeriod.End != default)
                 {
-                    var anchor = new XSSFClientAnchor(
-                        dx1: XSSFShape.EMU_PER_POINT * 2,
-                        dy1: XSSFShape.EMU_PER_POINT * 7,
-                        dx2: XSSFShape.EMU_PER_POINT * -2,
-                        dy2: XSSFShape.EMU_PER_POINT * 7,
-                        col1: 6 + (ticket.EstimatedPeriod.Start - dateRange.Start).Days,
-                        row1: rowIndex,
-                        col2: 6 + (ticket.EstimatedPeriod.End - dateRange.Start).Days + 1,
-                        row2: rowIndex);
+                    var anchor = CreateAnchor(2, -2, 8, ticket.EstimatedPeriod.Start, ticket.EstimatedPeriod.End);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
                     connector.SetLineStyleColor(source.Configuration.EstimatedLineColor);
                 }
                 if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End != default)
                 {
-                    var anchor = new XSSFClientAnchor(
-                        dx1: XSSFShape.EMU_PER_POINT * 2,
-                        dy1: XSSFShape.EMU_PER_POINT * 13,
-                        dx2: XSSFShape.EMU_PER_POINT * -2,
-                        dy2: XSSFShape.EMU_PER_POINT * 13,
-                        col1: 6 + (ticket.ActualPeriod.Start - dateRange.Start).Days,
-                        row1: rowIndex,
-                        col2: 6 + (ticket.ActualPeriod.End - dateRange.Start).Days + 1,
-                        row2: rowIndex);
+                    var anchor = CreateAnchor(2, -2, 11, ticket.ActualPeriod.Start, ticket.ActualPeriod.End);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
                     connector.SetLineStyleColor(source.Configuration.ActualLineColor);
                 }
-                else if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End == default && ticket.ActualPeriod.Start <= DateTime.Today)
+                if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End == default && ticket.ActualPeriod.Start <= DateTime.Today)
                 {
-                    var anchor = new XSSFClientAnchor(
-                        dx1: XSSFShape.EMU_PER_POINT * 2,
-                        dy1: XSSFShape.EMU_PER_POINT * 13,
-                        dx2: XSSFShape.EMU_PER_POINT * -2,
-                        dy2: XSSFShape.EMU_PER_POINT * 13,
-                        col1: 6 + (ticket.ActualPeriod.Start - dateRange.Start).Days,
-                        row1: rowIndex,
-                        col2: 6 + (DateTime.Today - dateRange.Start).Days + 1,
-                        row2: rowIndex);
+                    var anchor = CreateAnchor(2, +2, 11, ticket.ActualPeriod.Start, DateTime.Today);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
                     connector.SetLineStyleColor(source.Configuration.ActualLineColor);
                 }
                 if (ticket.EstimatedPeriod.End != default && ticket.ActualPeriod.End != default && ticket.EstimatedPeriod.End < ticket.ActualPeriod.End)
                 {
-                    var anchor = new XSSFClientAnchor(
-                        dx1: XSSFShape.EMU_PER_POINT * 2,
-                        dy1: XSSFShape.EMU_PER_POINT * 13,
-                        dx2: XSSFShape.EMU_PER_POINT * -2,
-                        dy2: XSSFShape.EMU_PER_POINT * 13,
-                        col1: 6 + (ticket.EstimatedPeriod.End.AddDays(1) - dateRange.Start).Days,
-                        row1: rowIndex,
-                        col2: 6 + (ticket.ActualPeriod.End - dateRange.Start).Days + 1,
-                        row2: rowIndex);
+                    var anchor = CreateAnchor(2, -2, 11, ticket.EstimatedPeriod.End.AddDays(1), ticket.ActualPeriod.End);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
                     connector.SetLineStyleColor(source.Configuration.DelayLineColor);
                 }
                 if (ticket.EstimatedPeriod.End != default && ticket.ActualPeriod.End == default && ticket.EstimatedPeriod.End < DateTime.Today)
                 {
-                    var anchor = new XSSFClientAnchor(
-                        dx1: XSSFShape.EMU_PER_POINT * 2,
-                        dy1: XSSFShape.EMU_PER_POINT * 13,
-                        dx2: XSSFShape.EMU_PER_POINT * -2,
-                        dy2: XSSFShape.EMU_PER_POINT * 13,
-                        col1: 6 + (ticket.EstimatedPeriod.End.AddDays(1) - dateRange.Start).Days,
-                        row1: rowIndex,
-                        col2: 6 + (DateTime.Today - dateRange.Start).Days + 1,
-                        row2: rowIndex);
+                    var anchor = CreateAnchor(2, +2, 11, ticket.EstimatedPeriod.End.AddDays(1), DateTime.Today);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
                     connector.SetLineStyleColor(source.Configuration.DelayLineColor);
