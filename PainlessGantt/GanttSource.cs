@@ -221,6 +221,7 @@ namespace PainlessGantt
                         row1: rowIndex,
                         col2: 6 + (end - dateRange.Start).Days + 1,
                         row2: rowIndex);
+                DateTime Max(DateTime a, DateTime b) => a < b ? b : a;
                 if (ticket.EstimatedPeriod.Start != default && ticket.EstimatedPeriod.End != default)
                 {
                     var anchor = CreateAnchor(2, -2, 8, ticket.EstimatedPeriod.Start, ticket.EstimatedPeriod.End);
@@ -244,14 +245,14 @@ namespace PainlessGantt
                 }
                 if (ticket.EstimatedPeriod.End != default && ticket.ActualPeriod.End != default && ticket.EstimatedPeriod.End < ticket.ActualPeriod.End)
                 {
-                    var anchor = CreateAnchor(2, -2, 11, ticket.EstimatedPeriod.End.AddDays(1), ticket.ActualPeriod.End);
+                    var anchor = CreateAnchor(2, -2, 11, Max(ticket.EstimatedPeriod.End.AddDays(1), ticket.ActualPeriod.Start), ticket.ActualPeriod.End);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
                     connector.SetLineStyleColor(source.Configuration.DelayLineColor);
                 }
                 if (ticket.EstimatedPeriod.End != default && ticket.ActualPeriod.End == default && ticket.EstimatedPeriod.End < DateTime.Today)
                 {
-                    var anchor = CreateAnchor(2, +2, 11, ticket.EstimatedPeriod.End.AddDays(1), DateTime.Today);
+                    var anchor = CreateAnchor(2, +2, 11, Max(ticket.EstimatedPeriod.End.AddDays(1), ticket.ActualPeriod.Start), DateTime.Today);
                     var connector = drawing.CreateConnector(anchor);
                     connector.LineWidth = 6;
                     connector.SetLineStyleColor(source.Configuration.DelayLineColor);
