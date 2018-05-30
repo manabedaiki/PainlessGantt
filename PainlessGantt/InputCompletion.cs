@@ -121,7 +121,7 @@ namespace PainlessGantt
                     return;
                 if (ticket.EstimatedPeriod.Start == default || ticket.EstimatedPeriod.End == default)
                     return;
-                if (DateTime.Today < ticket.EstimatedPeriod.Start)
+                if (DateTime.Today < ticket.EstimatedPeriod.Start && (ticket.ActualPeriod.Start == default || ticket.ActualPeriod.End == default))
                     return;
 
                 if (ticket.ActualPeriod.Start != default && ticket.ActualPeriod.End != default)
